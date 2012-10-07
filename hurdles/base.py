@@ -4,6 +4,7 @@
 #
 # See the file LICENSE for copying permission.
 
+import sys
 import time
 
 from collections import namedtuple
@@ -78,6 +79,12 @@ class BenchCase(object):
             exec_times = ExecTimeCollection(times=[self.tick(method_value, self) for x in [0.0] * repeat],
                                                               scale='ms')
             average = sum(exec_times.times) / repeat
+            ref_class = self.__class__.__name__
+
+            sys.stdout.write("{0}.{1} ... {2} {3}\n".format(ref_class,
+                                                                            method_name,
+                                                                            average,
+                                                                            exec_times.scale))
 
             self.results['exec_times'].update({method_name: exec_times})
             self.results['averages'].update({method_name: average})
