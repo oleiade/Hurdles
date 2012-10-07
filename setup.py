@@ -21,6 +21,18 @@ setup(
     ],
     keywords='elevator leveldb database key-value',
 
-    packages=['hurdles'],
+    packages=[
+        'hurdles',
+        'hurdles.referee'
+    ],
     package_dir={'': '.'},
+
+    zip_safe=False,
+
+    # Setting up executable/main functions links
+    entry_points={
+        'console_scripts': [
+            'hurdles = hurdles.referee.main:main',
+        ]
+    },
 )

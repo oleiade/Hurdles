@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import
 
-from .base import BenchCase
+from hurdles.base import BenchCase
 
 version = (0, 0, 1)
 
