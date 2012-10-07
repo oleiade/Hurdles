@@ -6,20 +6,12 @@
 
 import time
 
+from collections import namedtuple
 from functools import wraps
 from inspect import getmembers, ismethod
 
 
-def time_it(func, *args, **kwargs):
-    """
-    Decorator whichs times a function execution.
-    """
-    start = time.time()
-    func(*args, **kwargs)
-    end = time.time()
-    exec_time = "%s (%0.3f ms)" % (func.func_name, (end - start) * 1000)
-
-    return exec_time
+ExecTimeCollection = namedtuple('ExecTimeCollection', ['times', 'scale'])
 
 
 def extra_setup(setup_code):
@@ -46,6 +38,10 @@ def extra_setup(setup_code):
 class BenchCase(object):
     def __init__(self):
         self._benchmarks = []
+        self.results = {
+            'exec_times': {},
+            'averages': {},
+        }
 
     def setUp(self):
         """Hook method for setting up the benchmark
@@ -66,9 +62,24 @@ class BenchCase(object):
                     self._benchmarks.append((method_name, method_value))
         return self._benchmarks
 
-    def run(self):
+    def tick(self, func, *args, **kwargs):
+        """Times a function execution in miliseconds"""
+        start = time.time()
+        func(*args, **kwargs)
+        end = time.time()
+        exec_time = round(((end - start) * 1000), 2)
+
+        return exec_time
+
+    def run(self, repeat=10):
         for method_name, method_value in self.benchmarks:
             self.setUp()
-            time_it(method_value, self)
-            self.tearDown()
 
+            exec_times = ExecTimeCollection(times=[self.tick(method_value, self) for x in [0.0] * repeat],
+                                                              scale='ms')
+            average = sum(exec_times.times) / repeat
+
+            self.results['exec_times'].update({method_name: exec_times})
+            self.results['averages'].update({method_name: average})
+
+            self.tearDown()
