@@ -5,3 +5,11 @@
 from __future__ import absolute_import
 
 from .base import BenchCase
+
+version = (0, 0, 1)
+
+__title__ = "Hurdles"
+__author__ = "Oleiade"
+__license__ = "MIT"
+
+__version__ = '.'.join(map(str, version))
