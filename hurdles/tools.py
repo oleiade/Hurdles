@@ -17,7 +17,8 @@ def extra_setup(setup_code):
         # Exec extra setup code and put it in a local
         # context passed to function through kwargs.
         context = {}
-        exec setup_code in {}, context
+        compiled_code = compile(setup_code, '<string>', 'exec')
+        exec compiled_code in context
 
         @wraps(func)
         def decorated_function(*args, **kwargs):
