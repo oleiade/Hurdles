@@ -16,9 +16,11 @@ and will only run against Bench classes which name starts with 'Bench'
 
 
 ```python
-import hurdles
+from hurdles import BenchCase
+from hurdles.tools import extra_setup
 
-class BenchMyClass(hurdles.BenchCase):
+
+class BenchMyClass(BenchCase):
     def setUp(self):
         # Just like when unit testing
         # Set up some attributes here
@@ -35,13 +37,21 @@ class BenchMyClass(hurdles.BenchCase):
         # Do some stuff that you'd wanna time here
         return [random.randint(1, 100000) for x in [0] * 100000]
 
+    # You can even set up some context for your benchmark
+    # using the extra_setup decorator (it's generation won't be
+    # considered while timing your methods execution time).
+    # It's code will be compiled, executed, and the resulting locals
+    # will be writen to kwargs.
+    @extra_setup("import random"
+                 "rands = [random.randint(1, 10000) for x in [0] * 10000]")
     def bench_that(self, *args, **kwargs):
-        return [random.randint(1, 10000) for x in [0] * 10000]
+        for r in kwargs['rands']:
+            print r
 ```
 
 ### Running bench cases
 
-*Cmdline*
+#### From cmdline
 
 To run your bench cases, you can whether use the shipped hurdles cmdline tool:
 
@@ -51,7 +61,8 @@ $ hurdles mybenchmarksfolder1/ mybenchmarksfolder2/ benchmarkfile1
 
 Which will auto-detect your benchmark modules, and classes, and run them. 
 
-*Using bench classes*
+#### From python
+
 Or, you can eventually run your bench classes by yourself calling the run method over your classes:
 
 ```python
