@@ -19,7 +19,7 @@ setup(
         'Programming Language :: Python',
         'Operating System :: Unix-like',
     ],
-    keywords='elevator leveldb database key-value',
+    keywords='hurldes benchmarks unit-benchmarks',
 
     packages=[
         'hurdles',
