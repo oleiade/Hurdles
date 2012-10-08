@@ -15,15 +15,15 @@ import imp
 
 class Importer(object):
     """An importer class that does only path-specific imports. That
-	is, the given module is not searched for on sys.path, but only at
-	the path or in the directory specified.
-	"""
+    is, the given module is not searched for on sys.path, but only at
+    the path or in the directory specified.
+    """
 
     def importFromPath(self, path, fqname):
         """Import a dotted-name package whose tail is at path. In other words,
-		given foo.bar and path/to/foo/bar.py, import foo from path/to/foo then
-		bar from path/to/foo/bar, returning bar.
-		"""
+        given foo.bar and path/to/foo/bar.py, import foo from path/to/foo then
+        bar from path/to/foo/bar, returning bar.
+        """
         # find the base dir of the package
         path_parts = os.path.normpath(os.path.abspath(path)).split(os.sep)
         name_parts = fqname.split('.')
@@ -36,17 +36,17 @@ class Importer(object):
 
     def importFromDir(self, dir, fqname):
         """Import a module *only* from path, ignoring sys.path and
-		reloading if the version in sys.modules is not the one we want.
-		"""
+        reloading if the version in sys.modules is not the one we want.
+        """
         dir = os.path.normpath(os.path.abspath(dir))
         # log.debug("Import %s from %s", fqname, dir)
 
         # FIXME reimplement local per-dir cache?
-        
+
         # special case for __main__
         if fqname == '__main__':
             return sys.modules[fqname]
-            
+
         path = [dir]
         parts = fqname.split('.')
         part_fqname = ''

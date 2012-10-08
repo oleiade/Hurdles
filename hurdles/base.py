@@ -55,7 +55,7 @@ class BenchCase(object):
             self.setUp()
 
             exec_times = ExecTimeCollection(times=[self.tick(method_value, self) for x in [0.0] * repeat],
-                                                              scale='ms')
+                                            scale='ms')
             average = sum(exec_times.times) / repeat
             ref_class = self.__class__.__name__
 
