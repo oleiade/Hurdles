@@ -8,32 +8,10 @@ import sys
 import time
 
 from collections import namedtuple
-from functools import wraps
 from inspect import getmembers, ismethod
 
 
 ExecTimeCollection = namedtuple('ExecTimeCollection', ['times', 'scale'])
-
-
-def extra_setup(setup_code):
-    """Allows to setup some extra context to it's decorated function.
-
-    As a convention, the bench decorated function should always handle
-    *args and **kwargs. Kwargs will be updated with the extra context
-    set by the decorator.
-
-    Example:
-        @extra_setup("l = [x for x in xrange(100)]")
-        def bench_len(self, *args, **kwargs):
-            print len(kwargs['l'])
-    """
-    def decorator(func):
-        @wraps(func)
-        def decorated_function(*args, **kwargs):
-            exec setup_code in {}, kwargs
-            return func(*args, **kwargs)
-        return decorated_function
-    return decorator
 
 
 class BenchCase(object):
@@ -82,9 +60,9 @@ class BenchCase(object):
             ref_class = self.__class__.__name__
 
             sys.stdout.write("{0}.{1} ... {2} {3}\n".format(ref_class,
-                                                                            method_name,
-                                                                            average,
-                                                                            exec_times.scale))
+                                                            method_name,
+                                                            average,
+                                                            exec_times.scale))
 
             self.results['exec_times'].update({method_name: exec_times})
             self.results['averages'].update({method_name: average})
