@@ -50,21 +50,39 @@ class BenchCase(object):
 
         return exec_time
 
-    def run(self, repeat=10):
-        for method_name, method_value in self.benchmarks:
-            self.setUp()
+    def exec_benchmark(self, method_name, method_value, repeat=10):
+        self.setUp()
 
-            exec_times = ExecTimeCollection(times=[self.tick(method_value, self) for x in [0.0] * repeat],
-                                            scale='ms')
-            average = sum(exec_times.times) / repeat
+        exec_times = ExecTimeCollection(times=[self.tick(method_value, self) for x in [0.0] * repeat],
+                                        scale='ms')
+        average = sum(exec_times.times) / repeat
+
+        self.results['exec_times'].update({method_name: exec_times})
+        self.results['averages'].update({method_name: average})
+
+        self.tearDown()
+
+        return exec_times, average
+
+    def forward(self):
+        current_item = 0
+        while (current_item < len(self._entities)):
+            entity = self._entities[current_item]
+            current_item += 1
+            yield entity
+
+    def iter(self, repeat=10):
+        for method_name, method_value in self.benchmarks:
+            exec_times, average = self.exec_benchmark(method_name,
+                                                                             method_value,
+                                                                             repeat)
+            yield method_name, exec_times, average
+
+    def run(self, repeat=10):
+        for method_name, exec_times, average in self.iter():
             ref_class = self.__class__.__name__
 
             sys.stdout.write("{0}.{1} ... {2} {3}\n".format(ref_class,
                                                             method_name,
                                                             average,
                                                             exec_times.scale))
-
-            self.results['exec_times'].update({method_name: exec_times})
-            self.results['averages'].update({method_name: average})
-
-            self.tearDown()
