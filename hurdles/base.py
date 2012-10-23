@@ -64,13 +64,6 @@ class BenchCase(object):
 
         return exec_times, average
 
-    def forward(self):
-        current_item = 0
-        while (current_item < len(self._entities)):
-            entity = self._entities[current_item]
-            current_item += 1
-            yield entity
-
     def iter(self, repeat=10):
         for method_name, method_value in self.benchmarks:
             exec_times, average = self.exec_benchmark(method_name,
