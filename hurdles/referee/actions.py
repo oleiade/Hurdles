@@ -9,6 +9,7 @@ drop_file_ext = lambda filename: filename
 
 def get_bench_from_cmdline(cmdline):
     benchmark_files = []
+
     for path in cmdline:
         if os.path.exists(path):
             if os.path.isfile(path) and is_bench_file(path):

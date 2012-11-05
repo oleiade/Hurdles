@@ -64,15 +64,15 @@ class BenchCase(object):
 
         return exec_times, average
 
-    def iter(self, repeat=10):
+    def iter(self, sampling=10):
         for method_name, method_value in self.benchmarks:
             exec_times, average = self.exec_benchmark(method_name,
-                                                                             method_value,
-                                                                             repeat)
+                                                      method_value,
+                                                      sampling)
             yield method_name, exec_times, average
 
-    def run(self, repeat=10):
-        for method_name, exec_times, average in self.iter():
+    def run(self, sampling=10):
+        for method_name, exec_times, average in self.iter(sampling=sampling):
             ref_class = self.__class__.__name__
 
             sys.stdout.write("{0}.{1} ... {2} {3}\n".format(ref_class,
