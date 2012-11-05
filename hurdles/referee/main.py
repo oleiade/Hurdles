@@ -12,9 +12,11 @@ from .args import init_parser
 def main():
     args = init_parser().parse_args(sys.argv[1:])
     benchmarks = discover_benchmarks(get_bench_from_cmdline(args.paths))
+    ran_benchmarks = 0
 
     for bench in benchmarks:
-        bench().run(args.sampling)
+        bench().run(sampling=args.sampling)
+        ran_benchmarks += 1
 
-    sys.stdout.write('\n' + ('-' * 60) + '\n\n')
-    sys.stdout.write('Done.\n\n')
+    closure_msg = '\n{0} \nRan {1} benchmarks \n\nDone.'.format(('-' * 60), ran_benchmarks)
+    sys.stdout.write(closure_msg)
