@@ -14,13 +14,17 @@ from inspect import getmembers, ismethod
 ExecTimeCollection = namedtuple('ExecTimeCollection', ['times', 'scale'])
 
 
+class InvalidBenchmarkError(Exception):
+    pass
+
+
 class BenchCase(object):
-    def __init__(self):
-        self._benchmarks = []
+    def __init__(self, methods=None):
         self.results = {
             'exec_times': {},
             'averages': {},
         }
+        self._benchmarks = self._select(methods) if methods else None
 
     def setUp(self):
         """Hook method for setting up the benchmark
@@ -32,13 +36,29 @@ class BenchCase(object):
         fixture after testing it."""
         pass
 
+    def _select(self, methods):
+        methods = [methods] if isinstance(methods, str) else methods
+        bench_cases_methods = []
+
+        for method_name in methods:
+            if hasattr(self, method_name):
+                method_value = getattr(self, method_name)
+
+                if callable(method_value):
+                    bench_cases_methods.append((method_name, method_value))
+
+        return bench_cases_methods
+
     @property
     def benchmarks(self):
         if not self._benchmarks:
+            self._benchmarks = []
             bench_case_methods = getmembers(self.__class__, predicate=ismethod)
+
             for (method_name, method_value) in bench_case_methods:
                 if method_name.startswith('bench_'):
                     self._benchmarks.append((method_name, method_value))
+
         return self._benchmarks
 
     def tick(self, func, *args, **kwargs):
@@ -79,3 +99,22 @@ class BenchCase(object):
                                                             method_name,
                                                             average,
                                                             exec_times.scale))
+
+
+# def BenchSuite(object):
+#     def __init__(self):
+#         self.bench_cases = []
+
+#     def _register_benchcase(self, bench_case):
+#         if hasattr(bench_case, 'run') and bench_case.benchmarks:
+#             self.bench_cases.append(bench_cases)
+
+#     def add(self, bench_cases):
+#         for bench in bench_cases:
+#             try:
+#                 self.register(bench)
+#             except InvalidBenchmarkError:
+#                 continue
+
+#     def run(self):
+#         pass
