@@ -7,7 +7,7 @@
 import sys
 import time
 
-from collections import namedtuple
+from collections import namedtuple, Sequence
 from inspect import getmembers, ismethod
 
 
@@ -101,20 +101,16 @@ class BenchCase(object):
                                                             exec_times.scale))
 
 
-# def BenchSuite(object):
-#     def __init__(self):
-#         self.bench_cases = []
+class BenchSuite(object):
+    def __init__(self):
+        self.benchcases = []
 
-#     def _register_benchcase(self, bench_case):
-#         if hasattr(bench_case, 'run') and bench_case.benchmarks:
-#             self.bench_cases.append(bench_cases)
+    def add_benchcase(self, benchcase):
+        # if it walks like a duck, swims like a duck and quacks like a duck...
+        if hasattr(benchcase, 'run') and benchcase.benchmarks:
+            self.benchcases.append(benchcase)
 
-#     def add(self, bench_cases):
-#         for bench in bench_cases:
-#             try:
-#                 self.register(bench)
-#             except InvalidBenchmarkError:
-#                 continue
+    def run(self):
+        for benchcase in self.benchcases:
+            benchcase.run()
 
-#     def run(self):
-#         pass
