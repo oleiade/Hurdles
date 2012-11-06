@@ -28,11 +28,11 @@ def get_bench_from_cmdline(cmdline):
     return benchmark_files
 
 
-def discover_benchmarks(benchmark_files):
+def discover_benchcases(benchcases_files):
     I = Importer()
     benchmarks = []
 
-    for path in benchmark_files:
+    for path in benchcases_files:
         mod_path, extension = os.path.splitext(path)
         mod_path, mod_filename = os.path.split(mod_path)
 
