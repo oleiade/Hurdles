@@ -7,7 +7,7 @@
 import sys
 import time
 
-from collections import namedtuple, Sequence
+from collections import namedtuple
 from inspect import getmembers, ismethod
 
 
@@ -84,21 +84,25 @@ class BenchCase(object):
 
         return exec_times, average
 
-    def iter(self, sampling=10):
+    def iter(self, sampling=10, *args, **kwargs):
         for method_name, method_value in self.benchmarks:
             exec_times, average = self.exec_benchmark(method_name,
                                                       method_value,
                                                       sampling)
             yield method_name, exec_times, average
 
-    def run(self, sampling=10):
-        for method_name, exec_times, average in self.iter(sampling=sampling):
+    def run(self, sampling=10, *args, **kwargs):
+        ran = 0
+
+        for method_name, exec_times, average in self.iter(sampling=sampling, *args, **kwargs):
             ref_class = self.__class__.__name__
 
             sys.stdout.write("{0}.{1} ... {2} {3}\n".format(ref_class,
                                                             method_name,
                                                             average,
                                                             exec_times.scale))
+
+        return ran
 
 
 class BenchSuite(object):
@@ -110,7 +114,10 @@ class BenchSuite(object):
         if hasattr(benchcase, 'run') and benchcase.benchmarks:
             self.benchcases.append(benchcase)
 
-    def run(self):
-        for benchcase in self.benchcases:
-            benchcase.run()
+    def run(self, *args, **kwargs):
+        ran = 0
 
+        for benchcase in self.benchcases:
+            ran += benchcase.run(*args, **kwargs)
+
+        return ran
