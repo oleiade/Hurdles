@@ -53,7 +53,6 @@ class BenchMyClass(hurdles.BenchCase):
 ### Running bench cases
 
 ##### Via Code
->>>>>>> devel
 
 Running bench cases benchmarks can be made via the .run or .iter method. You can restrain benchmarks
 methods to be run at a BenchCase instanciation.
@@ -73,13 +72,8 @@ methods to be run at a BenchCase instanciation.
     [do_some_stuff(b) for b in it]
 ```
 
-<<<<<<< HEAD
-#### From python
-
-Or, you can eventually run your bench classes by yourself calling the run method over your classes:
-=======
 Just like unittest lib provides test cases suites, hurdles comes with bench cases suites.
->>>>>>> devel
+
 
 ```python
 suite = BenchSuite()
