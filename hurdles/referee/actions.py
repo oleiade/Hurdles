@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import inspect
 
@@ -9,6 +11,7 @@ drop_file_ext = lambda filename: filename
 
 def get_bench_from_cmdline(cmdline):
     benchmark_files = []
+
     for path in cmdline:
         if os.path.exists(path):
             if os.path.isfile(path) and is_bench_file(path):
@@ -25,11 +28,11 @@ def get_bench_from_cmdline(cmdline):
     return benchmark_files
 
 
-def discover_benchmarks(benchmark_files):
+def discover_benchcases(benchcases_files):
     I = Importer()
     benchmarks = []
 
-    for path in benchmark_files:
+    for path in benchcases_files:
         mod_path, extension = os.path.splitext(path)
         mod_path, mod_filename = os.path.split(mod_path)
 

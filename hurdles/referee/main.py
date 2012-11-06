@@ -1,14 +1,28 @@
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2012 theo crevon
+#
+# See the file LICENSE for copying permission.
+
+from __future__ import absolute_import
+
 import sys
 
-from hurdles.referee.actions import get_bench_from_cmdline, discover_benchmarks
+from hurdles.base import BenchSuite
+
+from .actions import get_bench_from_cmdline, discover_benchcases
+from .args import init_parser
 
 
 def main():
-    paths = get_bench_from_cmdline(sys.argv[1:])
-    benchmarks = discover_benchmarks(paths)
+    args = init_parser().parse_args(sys.argv[1:])
+    benchcases = discover_benchcases(get_bench_from_cmdline(args.paths))
+    suite = BenchSuite()
+    ran_benchmarks = 0
 
-    for bench in benchmarks:
-        bench().run()
+    for benchcase in benchcases:
+        suite.add_benchcase(benchcase())
 
-    sys.stdout.write('\n' + ('-' * 80) + '\n')
-    sys.stdout.write('Done.\n')
+    ran_benchmarks = suite.run(sampling=args.sampling)
+    closure_msg = '\n{0} \nRan {1} benchmarks \n\nDone.'.format(('-' * 60), ran_benchmarks)
+    sys.stdout.write(closure_msg)

@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 # Copyright (c) 2012 theo crevon
 #
 # See the file LICENSE for copying permission.
 
 from __future__ import absolute_import
 
-from hurdles.base import BenchCase
+from hurdles.base import BenchCase, BenchSuite
 
 version = (0, 0, 1)
 

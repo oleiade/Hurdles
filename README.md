@@ -11,7 +11,7 @@ A simple and yet powerful python benchmark framework. Write unit benchs just lik
 
 Just like you'd write unittest, subclass the BenchCase class, and there you go.
 
-**Nota** : Just like nose tool, hurdles will only consider file named following the pattern 'bench_*.py'
+**Nota** : hurdles will only consider file named following the pattern 'bench_*.py'
 and will only run against Bench classes which name starts with 'Bench'
 
 
@@ -20,7 +20,9 @@ from hurdles import BenchCase
 from hurdles.tools import extra_setup
 
 
-class BenchMyClass(BenchCase):
+from hurdles.tools import extra_setup
+
+class BenchMyClass(hurdles.BenchCase):
     def setUp(self):
         # Just like when unit testing
         # Set up some attributes here
@@ -35,45 +37,68 @@ class BenchMyClass(BenchCase):
     # to be run as a benchmark by hurdles
     def bench_this(self, *args, **kwargs):
         # Do some stuff that you'd wanna time here
-        return [random.randint(1, 100000) for x in [0] * 100000]
+        return [x for x in [0] * 100000]
 
-    # You can even set up some context for your benchmark
-    # using the extra_setup decorator (it's generation won't be
-    # considered while timing your methods execution time).
-    # It's code will be compiled, executed, and the resulting locals
-    # will be writen to kwargs.
-    @extra_setup("import random"
-                 "rands = [random.randint(1, 10000) for x in [0] * 10000]")
+    # hurdles.tools provides an extra_setup decorator
+    # which provides the ability to run some setup code
+    # outside the timed benchmark running, in order
+    # to prepare some data, import some dependencies etc...
+    # Once prepared, context is injected into kwargs.
+    @extra_setup("from random import randint"
+                 "r = [x for x in xrange(10000)]")
     def bench_that(self, *args, **kwargs):
-        for r in kwargs['rands']:
-            print r
+        [randint(0, 1000) for x in kwargs['r']]
 ```
 
 ### Running bench cases
 
-#### From cmdline
+##### Via Code
+>>>>>>> devel
 
-To run your bench cases, you can whether use the shipped hurdles cmdline tool:
+Running bench cases benchmarks can be made via the .run or .iter method. You can restrain benchmarks
+methods to be run at a BenchCase instanciation.
+
+```python
+    B = BenchMyClass()  # will run every BenchMyClass benchmarks
+    # or
+    B = BenchMyClass(['bench_this'])  # will only run BenchMyClass 'bench_this' method
+
+    # BenchCase class provides a .run method to run and print
+    # on stdout benchmarks results.
+    B.run()
+
+    # and a .iter method which provides an iterator over benchmarks
+    # methods.
+    it = B.iter()
+    [do_some_stuff(b) for b in it]
+```
+
+<<<<<<< HEAD
+#### From python
+
+Or, you can eventually run your bench classes by yourself calling the run method over your classes:
+=======
+Just like unittest lib provides test cases suites, hurdles comes with bench cases suites.
+>>>>>>> devel
+
+```python
+suite = BenchSuite()
+suite.add_benchcase(BenchMyCase())
+suite.add_benchcase(BenchMyOtherCase(['bench_foo', 'bench_bar'])
+
+suite.run()
+```
+
+##### Via Cmdline
+
+Hurdles comes with a cmdline util to run your bench cases :
 
 ```bash
 $ hurdles mybenchmarksfolder1/ mybenchmarksfolder2/ benchmarkfile1
 ```
 
-Which will auto-detect your benchmark modules, and classes, and run them. 
-
-#### From python
-
-Or, you can eventually run your bench classes by yourself calling the run method over your classes:
-
-```python
-if __name__ == "__main__":
-    B = BenchMyClass()
-    B.run()
-```
-
-### Output
-
-In every case, the results should output on stdout like this:
+Which will auto-detect your benchmark modules, and classes, and run them (uses a BenchSuite under the hood).
+the results should output on stdout like the following :
 
 ```bash
 BenchMyClass.bench_this ... X ms
