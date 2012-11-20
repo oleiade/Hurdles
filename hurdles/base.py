@@ -10,7 +10,12 @@ import time
 from collections import namedtuple
 from inspect import getmembers, ismethod
 
+from clint.textui import indent, puts, colored
 
+from .utils import median, average
+
+
+ExecutionStats = namedtuple('ExecutionStats', ['average', 'median', 'fastest', 'slowest'])
 ExecTimeCollection = namedtuple('ExecTimeCollection', ['times', 'scale'])
 
 
@@ -19,10 +24,12 @@ class InvalidBenchmarkError(Exception):
 
 
 class BenchCase(object):
+    scale = 'ms'
+
     def __init__(self, methods=None):
         self.results = {
-            'exec_times': {},
-            'averages': {},
+            'times': {},
+            'stats': {},
         }
         self._benchmarks = self._select(methods) if methods else None
 
@@ -73,34 +80,36 @@ class BenchCase(object):
     def exec_benchmark(self, method_name, method_value, repeat=10):
         self.setUp()
 
-        exec_times = ExecTimeCollection(times=[self.tick(method_value, self) for x in [0.0] * repeat],
-                                        scale='ms')
-        average = sum(exec_times.times) / repeat
+        exec_times = [self.tick(method_value, self) for x in [0.0] * repeat]
+        exec_stats = ExecutionStats(average=average(exec_times),
+                                                  median=median(exec_times),
+                                                  fastest=min(exec_times),
+                                                  slowest=max(exec_times))
 
-        self.results['exec_times'].update({method_name: exec_times})
-        self.results['averages'].update({method_name: average})
+        self.results['times'].update({method_name: exec_times})
+        self.results['stats'].update({method_name: exec_stats})
 
         self.tearDown()
 
-        return exec_times, average
+        return exec_times, exec_stats
 
     def iter(self, sampling=10, *args, **kwargs):
         for method_name, method_value in self.benchmarks:
-            exec_times, average = self.exec_benchmark(method_name,
-                                                      method_value,
-                                                      sampling)
-            yield method_name, exec_times, average
+            exec_times, exec_stats = self.exec_benchmark(method_name,
+                                                                                 method_value,
+                                                                                 sampling)
+            yield method_name, exec_times, exec_stats
 
     def run(self, sampling=10, *args, **kwargs):
         ran = 0
 
-        for method_name, exec_times, average in self.iter(sampling=sampling, *args, **kwargs):
+        for method, times, stats in self.iter(sampling=sampling, *args, **kwargs):
             ref_class = self.__class__.__name__
 
-            sys.stdout.write("{0}.{1} ... {2} {3}\n".format(ref_class,
-                                                            method_name,
-                                                            average,
-                                                            exec_times.scale))
+            puts("{0}.{1}".format(ref_class, method))
+            with indent(3, quote=colored.yellow(' |')):
+                for key, value in stats._asdict().items():
+                    puts('{0}\t {1} {2}'.format(key, value, self.scale))
 
         return ran
 
