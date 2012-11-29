@@ -23,7 +23,8 @@ setup(
 
     packages=[
         'hurdles',
-        'hurdles.referee'
+        'hurdles.referee',
+        'hurdles.context',
     ],
     package_dir={'': '.'},
 
