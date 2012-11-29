@@ -5,8 +5,13 @@ import inspect
 
 from hurdles.referee.importer import *
 
-is_bench_file = lambda filepath: bool(filepath.startswith('bench_') and filepath.endswith('.py'))
 drop_file_ext = lambda filename: filename
+
+
+def is_bench_file(filepath):
+    if '/' in filepath:
+        filepath = filepath.split('/')[-1]
+    return bool(filepath.startswith('bench_') and filepath.endswith('.py'))
 
 
 def get_bench_from_cmdline(cmdline):
