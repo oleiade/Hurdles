@@ -27,6 +27,11 @@ setup(
     ],
     package_dir={'': '.'},
 
+    install_requires=[
+        'unittest2',
+        'clint==0.3.1'
+    ],
+
     zip_safe=False,
 
     # Setting up executable/main functions links
