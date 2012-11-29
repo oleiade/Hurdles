@@ -1,6 +1,6 @@
 ## Overview
 
-A simple and yet powerful python benchmark framework. Write unit benchs just like you'd write unit tests.
+A simple yet powerful python benchmark framework. Write unit benchs just like you'd write unit tests.
 
 *It's not only about crossing the finish line, it's about finding the hurdles that to slow you down*
 
@@ -57,6 +57,7 @@ class BenchMyClass(hurdles.BenchCase):
 Running bench cases benchmarks can be made via the .run or .iter method. You can restrain benchmarks
 methods to be run at a BenchCase instanciation.
 
+
 ```python
     B = BenchMyClass()  # will run every BenchMyClass benchmarks
     # or
@@ -95,10 +96,44 @@ Which will auto-detect your benchmark modules, and classes, and run them (uses a
 the results should output on stdout like the following :
 
 ```bash
-BenchMyClass.bench_this ... X ms
-BenchMyClass.bench_that ... Y ms
---------------------------------
+$ hurdles mybenchmarksfolder1/
+BenchProof.bench_this
+ | average   9.301 ms
+ | median    8.445 ms
+ | fastest   7.63 ms
+ | slowest   13.25 ms
+BenchProof.bench_that
+ | average   13.126 ms
+ | median    12.06 ms
+ | fastest   11.68 ms
+ | slowest   19.83 ms
+
+------------------------------------------------------------ 
+Ran 2 benchmarks 
+
+Done.          
+```
+
+**Note** that hurdles also supports tsv output format. To use it, just pass hurdles the `-o` option:
+
+```bash
+$ hurdles mybenchmarksfolder1/ -o tsv
+benchcase.method    average median  fastest slowest
+BenchProof.bench_this    5.315   3.5 3.41    21.02
+
+BenchProof.bench_that    8.866   7.965   7.53    15.53
+
+------------------------------------------------------------ 
+Ran 3 benchmarks 
+
 Done.
+
+# You can also redirect output to a file using the -p argument,
+# and specifying a path
+$ hurdles mybenchmarksfolder1/ -o tsv -p result.tsv
+
+# or simply forward it to a file descriptor.
+$ hurdles mybenchmarksfolder1/ -o tsv > result.tsv
 ```
 
 *For more examples, see `examples` included folder*
