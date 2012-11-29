@@ -12,6 +12,7 @@ from inspect import getmembers, ismethod
 
 from clint.textui import indent, puts, colored
 
+from .formatter import Formatter
 from .utils import median, average
 
 
@@ -27,6 +28,7 @@ class BenchCase(object):
     scale = 'ms'
 
     def __init__(self, methods=None):
+        self.formatter = Formatter()
         self.results = {
             'times': {},
             'stats': {},
@@ -101,17 +103,7 @@ class BenchCase(object):
             yield method_name, exec_times, exec_stats
 
     def run(self, sampling=10, *args, **kwargs):
-        ran = 0
-
-        for method, times, stats in self.iter(sampling=sampling, *args, **kwargs):
-            ref_class = self.__class__.__name__
-
-            puts("{0}.{1}".format(ref_class, method))
-            with indent(3, quote=colored.yellow(' |')):
-                for key, value in stats._asdict().items():
-                    puts('{0}\t {1} {2}'.format(key, value, self.scale))
-
-        return ran
+        return self.formatter.apply(self.iter(sampling), self.__class__.__name__)
 
 
 class BenchSuite(object):
