@@ -103,7 +103,9 @@ class BenchCase(object):
             yield method_name, exec_times, exec_stats
 
     def run(self, sampling=10, *args, **kwargs):
-        return self.formatter.apply(self.iter(sampling), self.__class__.__name__)
+        return self.formatter.apply(self.iter(sampling),
+                                    self.__class__.__name__,
+                                    *args, **kwargs)
 
 
 class BenchSuite(object):
@@ -116,6 +118,7 @@ class BenchSuite(object):
             self.benchcases.append(benchcase)
 
     def run(self, *args, **kwargs):
+        # import pdb; pdb.set_trace()
         ran = 0
 
         for benchcase in self.benchcases:

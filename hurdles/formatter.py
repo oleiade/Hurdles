@@ -19,7 +19,8 @@ class Formatter(object):
             raise KeyError("Output type : %s is not handled. Yet." % output)
 
     def apply(self, benchcase_it, classname, *args, **kwargs):
-        return self.HANDLERS[self.output](benchcase_it, classname, *args, **kwargs)
+        output = kwargs.get('output') or self.output
+        return self.HANDLERS[output](benchcase_it, classname, *args, **kwargs)
 
     def to_stdout(self, benchcase_it, classname, *args, **kwargs):
         ran = 0
@@ -31,7 +32,7 @@ class Formatter(object):
                     puts('{0}\t {1} {2}'.format(key, value, self.scale))
             ran += 1
 
-        return ran, None
+        return ran
 
     def to_tsv(self, benchcase_it, classname, *args, **kwargs):
         path = kwargs.get('path')
@@ -42,13 +43,13 @@ class Formatter(object):
             f = open(path, 'wb')  # let it raise if OSError
             action = f.write
 
-        action('benchcase.method,average,median,fastest,slowest')
+        action('benchcase.method\taverage\tmedian\tfastest\tslowest')
 
         for method, times, stats in benchcase_it:
             bench_name = '.'.join([classname, method])
             values = '\t'.join([unicode(value) for value
                                in stats._asdict().values()])
-            action('\t'.join([bench_name, values]))
+            action('\t'.join([bench_name, values]) + '\n')
             ran += 1
 
         return ran

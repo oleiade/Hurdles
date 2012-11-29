@@ -23,6 +23,8 @@ def main():
     for benchcase in benchcases:
         suite.add_benchcase(benchcase())
 
-    ran_benchmarks = suite.run(sampling=args.sampling)
+    ran_benchmarks = suite.run(sampling=args.sampling,
+                               output=args.output,
+                               path=args.path)
     closure_msg = '\n{0} \nRan {1} benchmarks \n\nDone.'.format(('-' * 60), ran_benchmarks)
     sys.stdout.write(closure_msg)
