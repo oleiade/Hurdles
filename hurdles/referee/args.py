@@ -23,14 +23,9 @@ def init_parser():
                         type=int,
                         default=10)
 
-    parser.add_argument('-o',
-                        '--output',
+    parser.add_argument('-f',
+                        '--format',
                         action='store',
                         default='stdout')
-
-    parser.add_argument('-p',
-                        '--path',
-                        action='store',
-                        default=None)
 
     return parser

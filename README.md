@@ -114,25 +114,31 @@ Ran 2 benchmarks
 Done.          
 ```
 
-**Note** that hurdles also supports tsv output format. To use it, just pass hurdles the `-o` option:
+**Note** that hurdles also supports multi output formats:
+
+* csv
+* tsv
+* json
+* yaml
+* xls
+
+To use them, just pass hurdles the `-f` option:
 
 ```bash
-$ hurdles mybenchmarksfolder1/ -o tsv
+$ hurdles mybenchmarksfolder1/ -f tsv
 benchcase.method    average median  fastest slowest
 BenchProof.bench_this    5.315   3.5 3.41    21.02
 
 BenchProof.bench_that    8.866   7.965   7.53    15.53
 
------------------------------------------------------------- 
-Ran 3 benchmarks 
+$ hurdles mybenchmarksfolder2/ -f json
+- {average: 3.0940000000000003, benchcase.method: BenchProof.bench_this, fastest: 2.85,
+  median: 3.04, slowest: 3.78}
+- {average: 7.119999999999999, benchcase.method: BenchProof.bench_that, fastest: 6.76,
+  median: 7.035, slowest: 8.0}
 
-Done.
-
-# You can also redirect output to a file using the -p argument,
-# and specifying a path
-$ hurdles mybenchmarksfolder1/ -o tsv -p result.tsv
-
-# or simply forward it to a file descriptor.
+# You can also redirect output to a file
+# by simply forwarding it to a file descriptor.
 $ hurdles mybenchmarksfolder1/ -o tsv > result.tsv
 ```
 

@@ -4,23 +4,50 @@
 #
 # See the file LICENSE for copying permission.
 
+import tablib
+
 from clint.textui import indent, puts, colored
 
 
 class Formatter(object):
     def __init__(self, output='stdout', scale='ms', *args, **kwargs):
-        self.HANDLERS = {
-            'stdout': self.to_stdout,
-            'tsv': self.to_tsv,
-        }
         self.scale = scale
         self.output = output.lower()
-        if not output in self.HANDLERS:
-            raise KeyError("Output type : %s is not handled. Yet." % output)
 
     def apply(self, benchcase_it, classname, *args, **kwargs):
-        output = kwargs.get('output') or self.output
-        return self.HANDLERS[output](benchcase_it, classname, *args, **kwargs)
+        format = kwargs.get('format') or self.format
+
+        if format == 'stdout':
+            return self.to_stdout(benchcase_it, classname, *args, **kwargs)
+        else:
+            ran, dataset = self.format(benchcase_it, classname, *args, **kwargs)
+
+            if hasattr(dataset, format):
+                print getattr(dataset, format)
+                return ran
+
+        return 0
+
+    def format(self, benchcase_it, classname, *args, **kwargs):
+        ran = 0
+        data = []
+        headers = (
+            'benchcase.method',
+            'average',
+            'median',
+            'fastest',
+            'slowest',
+        )
+
+        for method, times, stats in benchcase_it:
+            bench_name = '.'.join([classname, method])
+            values = [value for value
+                      in stats._asdict().values()]
+            data.append([bench_name] + values)
+            ran += 1
+
+        data = tablib.Dataset(*data, headers=headers)
+        return ran, data
 
     def to_stdout(self, benchcase_it, classname, *args, **kwargs):
         ran = 0
@@ -30,26 +57,6 @@ class Formatter(object):
             with indent(3, quote=colored.yellow(' |')):
                 for key, value in stats._asdict().items():
                     puts('{0}\t {1} {2}'.format(key, value, self.scale))
-            ran += 1
-
-        return ran
-
-    def to_tsv(self, benchcase_it, classname, *args, **kwargs):
-        path = kwargs.get('path')
-        ran = 0
-        action = puts
-
-        if path:
-            f = open(path, 'wb')  # let it raise if OSError
-            action = f.write
-
-        action('benchcase.method\taverage\tmedian\tfastest\tslowest')
-
-        for method, times, stats in benchcase_it:
-            bench_name = '.'.join([classname, method])
-            values = '\t'.join([unicode(value) for value
-                               in stats._asdict().values()])
-            action('\t'.join([bench_name, values]) + '\n')
             ran += 1
 
         return ran

@@ -29,7 +29,8 @@ setup(
 
     install_requires=[
         'unittest2',
-        'clint==0.3.1'
+        'clint==0.3.1',
+        'tablib==0.9.11',
     ],
 
     zip_safe=False,
