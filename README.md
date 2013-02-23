@@ -4,6 +4,8 @@ A simple yet powerful python benchmark framework. Write unit benchs just like yo
 
 *It's not only about crossing the finish line, it's about finding the hurdles that to slow you down*
 
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=oleiade&url=http://github.com/oleiade/Hurdles&title=Hurdles&language=&tags=github&category=software) 
+
 ## Usage
 
 
